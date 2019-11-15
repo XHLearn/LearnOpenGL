@@ -10,6 +10,7 @@
             "${file}",
             "-o",
             "a.out",
+            "glad.c",
             "-lGLEW",
             "-lglfw3",
             "-lGLU",
@@ -18,7 +19,7 @@
             "-lpthread",
             "-lXrandr",
             "-lXi",
-            "-ldl"
+            "-ldl",
         ],
         "type": "shell",
         "group": {
