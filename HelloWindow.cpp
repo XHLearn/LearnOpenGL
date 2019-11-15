@@ -48,6 +48,8 @@ int main()
     // glViewport函数前两个参数控制窗口左下角的位置。第三个和第四个参数控制渲染窗口的宽度和高度（像素）
     glViewport(0, 0, width, height);
 
+    // glViewport(0, 0, 800, 600);  // 或者直接使用width、height
+
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
