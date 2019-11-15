@@ -1,0 +1,35 @@
+{
+    // 有关 tasks.json 格式的文档，请参见
+    // https://go.microsoft.com/fwlink/?LinkId=733558
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "Build",
+        "command": "g++",
+        "args": [
+            "-std=c++11",
+            "${file}",
+            "-o",
+            "a.out",
+            "-lGLEW",
+            "-lglfw3",
+            "-lGLU",
+            "-lGL",
+            "-lX11",
+            "-lpthread",
+            "-lXrandr",
+            "-lXi",
+            "-ldl"
+        ],
+        "type": "shell",
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared"
+        }
+    }]
+}
