@@ -93,38 +93,32 @@ int main()
     glDeleteShader(vShader);
     glDeleteShader(fShader);
 
-    float firstTriangle[] = {
-        -0.9f, -0.5f, 0.0f, // left
-        -0.0f, -0.5f, 0.0f, // right
-        -0.45f, 0.5f, 0.0f, // top
-    };
-    float secondTriangle[] = {
-        0.0f, -0.5f, 0.0f, // left
-        0.9f, -0.5f, 0.0f, // right
-        0.45f, 0.5f, 0.0f  // top
-    };
+    float triangle[2][9] = {
+        {
+            -0.9f, -0.5f, 0.0f, // left
+            -0.0f, -0.5f, 0.0f, // right
+            -0.45f, 0.5f, 0.0f, // top
+        },
+        {
+            0.0f, -0.5f, 0.0f, // left
+            0.9f, -0.5f, 0.0f, // right
+            0.45f, 0.5f, 0.0f  // top
+        }};
 
     unsigned int VAO[2], VBO[2];
     // we can also generate multiple VAO or buffers at the same time
     glGenVertexArrays(2, VAO);
     glGenBuffers(2, VBO);
 
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
-    // 在渲染前指定OpenGL该如何解释顶点数据
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(VAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-    // 在渲染前指定OpenGL该如何解释顶点数据
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindVertexArray(VAO[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(triangle[i]), triangle[i], GL_STATIC_DRAW);
+        // 在渲染前指定OpenGL该如何解释顶点数据
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+    }
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
@@ -139,10 +133,11 @@ int main()
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO[0]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(VAO[1]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glBindVertexArray(VAO[i]);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+        }
     }
 
     glDeleteVertexArrays(2, VAO);
