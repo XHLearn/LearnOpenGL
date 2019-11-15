@@ -44,6 +44,7 @@ int main()
     // 创建完窗口我们就可以通知GLFW将我们窗口的上下文设置为当前线程的主上下文了
     glfwMakeContextCurrent(window);
 
+    // must have
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         cout << "Faile to initialize GLAD" << endl;
@@ -98,11 +99,11 @@ int main()
         0.0f, 0.5f, 0.0f};
 
     unsigned int VAO;
-    unsigned int VBO;
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
 
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -110,12 +111,17 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindVertexArray(0);
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
+        // glfwSwapBuffers函数会交换颜色缓冲（它是一个储存着GLFW窗口每一个像素颜色的大缓冲）
+        glfwSwapBuffers(window);
+        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
+        glfwPollEvents();
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -123,11 +129,6 @@ int main()
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        // glfwSwapBuffers函数会交换颜色缓冲（它是一个储存着GLFW窗口每一个像素颜色的大缓冲）
-        glfwSwapBuffers(window);
-        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
-        glfwPollEvents();
     }
 
     glDeleteVertexArrays(1, &VAO);
