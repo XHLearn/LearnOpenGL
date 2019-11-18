@@ -1,23 +1,12 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "shader.h"
 using namespace std;
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const char *vShaderSource = "#version 330 core\n"
-                            "layout (location = 0) in vec3 aPos;\n"
-                            "void main()\n"
-                            "{\n"
-                            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                            "}\0";
-const char *fShaderSource = "#version 330 core\n"
-                            "out vec4 FragColor;\n"
-                            "void main()\n"
-                            "{\n"
-                            "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                            "}\n\0";
 
 int main()
 {
@@ -51,48 +40,6 @@ int main()
         return -1;
     }
 
-    // 编译顶点着色器
-    unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vShader, 1, &vShaderSource, nullptr);
-    glCompileShader(vShader);
-
-    // 检测编译是否成功
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vShader, sizeof(infoLog), nullptr, infoLog);
-        cout << "complie vertex shader error:" << infoLog << endl;
-    }
-
-    // 编译片段着色器
-    unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader, 1, &fShaderSource, nullptr);
-    glCompileShader(fShader);
-
-    glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fShader, sizeof(infoLog), nullptr, infoLog);
-        cout << "complie fragment shader error:" << infoLog << endl;
-    }
-
-    // 着色器程序-多个着色器合并之后并最终链接完成的版本
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vShader);
-    glAttachShader(shaderProgram, fShader);
-    glLinkProgram(shaderProgram);
-    // 检查是否链接成功
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, sizeof(infoLog), nullptr, infoLog);
-        cout << "link shader program error:" << infoLog << endl;
-    }
-    glDeleteShader(vShader);
-    glDeleteShader(fShader);
-
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
@@ -114,6 +61,8 @@ int main()
     // glBindBuffer(GL_ARRAY_BUFFER, 0);
     // glBindVertexArray(0);
 
+    Shader shader = Shader("Shaders/1-4-practice-1.vs","Shaders/1-4-practice-1.fs");
+
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
@@ -126,7 +75,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
-        glUseProgram(shaderProgram);
+        shader.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
