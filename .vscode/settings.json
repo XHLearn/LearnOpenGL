@@ -2,6 +2,7 @@
     "files.associations": {
         "*.xh": "json",
         "*.love": "json",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "iostream": "cpp"
     }
 }
