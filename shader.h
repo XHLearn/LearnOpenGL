@@ -20,9 +20,9 @@ public:
     void use();
     unsigned int CreateShader(int type, const char *code);
     // uniform工具函数
-    void setBool(string &name, bool value) const;
-    void setInt(string &name, int value) const;
-    void setFloat(string &name, float value) const;
+    void setBool(const string &name, bool value) const;
+    void setInt(const string &name, int value) const;
+    void setFloat(const string &name, float value) const;
 };
 
 Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath)
@@ -109,17 +109,17 @@ void Shader::use()
     glUseProgram(ID);
 }
 
-void Shader::setBool(string &name, bool value) const
+void Shader::setBool(const string &name, bool value) const
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
 
-void Shader::setFloat(string &name, float value) const
+void Shader::setFloat(const string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::setInt(string &name, int value) const
+void Shader::setInt(const string &name, int value) const
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }

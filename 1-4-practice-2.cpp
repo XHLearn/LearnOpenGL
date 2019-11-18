@@ -61,7 +61,7 @@ int main()
     // glBindBuffer(GL_ARRAY_BUFFER, 0);
     // glBindVertexArray(0);
 
-    Shader shader = Shader("Shaders/1-4-practice-1.vs","Shaders/1-4-practice-1.fs");
+    Shader shader = Shader("Shaders/1-4-practice-2.vs", "Shaders/1-4-practice-2.fs");
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
@@ -76,6 +76,8 @@ int main()
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
         shader.use();
+        shader.setFloat("offset", 0.5f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
