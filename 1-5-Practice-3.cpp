@@ -10,7 +10,7 @@ using namespace std;
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, bool flip = false)
+void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, int custom, bool flip = false)
 {
     // 图像文件的位置、宽度、高度、颜色通道的个数
     int width, height, nrChannels;
@@ -19,11 +19,11 @@ void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, boo
     // 生成纹理
     glGenTextures(1, texture);
     glBindTexture(GL_TEXTURE_2D, *texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    if (flip)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, custom);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, custom);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    if (!flip)
     {
         stbi_set_flip_vertically_on_load(true);
     }
@@ -74,11 +74,11 @@ int main()
     }
 
     float vertices[] = {
-        // ---- 位置 ----  ---- 颜色 ----    - 纹理坐标 -
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上
+        // positions          // colors           // texture coords (note that we changed them to 'zoom in' on our texture image)
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.55f, 0.55f, // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.55f, 0.45f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.45f, 0.45f, // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.45f, 0.55f  // top left 
     };
 
     unsigned int indices[] = {
@@ -110,10 +110,10 @@ int main()
 
     // 生成纹理
     unsigned int texture1, texture2;
-    CreateTexture(&texture1, "Textures/container.jpg", GL_RGB);
-    CreateTexture(&texture2, "Textures/awesomeface.png", GL_RGBA, true);
+    CreateTexture(&texture1, "Textures/container.jpg", GL_RGB, GL_CLAMP_TO_EDGE);
+    CreateTexture(&texture2, "Textures/awesomeface.png", GL_RGBA, GL_REPEAT, true);
 
-    Shader shader("Shaders/1-5-practice-1.vs", "Shaders/1-5-practice-1.fs");
+    Shader shader("Shaders/1-5-practice-3.vs", "Shaders/1-5-practice-3.fs");
     shader.use();
     shader.setInt("ourTexture1", 0);
     shader.setInt("ourTexture2", 1);
