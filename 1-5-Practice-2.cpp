@@ -113,7 +113,7 @@ int main()
     CreateTexture(&texture1, "Textures/container.jpg", GL_RGB, GL_CLAMP_TO_EDGE);
     CreateTexture(&texture2, "Textures/awesomeface.png", GL_RGBA, GL_REPEAT, true);
 
-    Shader shader("Shaders/1-5-textures-2.vs", "Shaders/1-5-textures-2.fs");
+    Shader shader("Shaders/1-5-practice-2.vs", "Shaders/1-5-practice-2.fs");
     shader.use();
     shader.setInt("ourTexture1", 0);
     shader.setInt("ourTexture2", 1);
