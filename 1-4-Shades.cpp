@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <cmath>
 using namespace std;
 
 // settings
@@ -14,9 +15,10 @@ const char *vShaderSource = "#version 330 core\n"
                             "}\0";
 const char *fShaderSource = "#version 330 core\n"
                             "out vec4 FragColor;\n"
+                            "uniform vec4 ourColor;\n"
                             "void main()\n"
                             "{\n"
-                            "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                            "   FragColor = ourColor;\n"
                             "}\n\0";
 
 int main()
@@ -127,6 +129,12 @@ int main()
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
         glUseProgram(shaderProgram);
+
+        float time = glfwGetTime();
+        float greenValue = sin(time) / 2.0f + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        glUniform4f(vertexColorLocation, 0, greenValue, 0, 1.0f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
