@@ -10,6 +10,37 @@ using namespace std;
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, bool flip = false)
+{
+    // 图像文件的位置、宽度、高度、颜色通道的个数
+    int width, height, nrChannels;
+    unsigned char *data;
+
+    // 生成纹理
+    glGenTextures(1, texture);
+    glBindTexture(GL_TEXTURE_2D, *texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (flip)
+    {
+        stbi_set_flip_vertically_on_load(true);
+    }
+    data = stbi_load(filename, &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, rgbmode, width, height, 0, rgbmode, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        cout << "Failed to load texture:" << filename << endl;
+    }
+    // 释放图像的内存
+    stbi_image_free(data);
+}
+
 int main()
 {
     // 调用glfwInit函数来初始化GLFW
@@ -25,7 +56,7 @@ int main()
     // glfwCreateWindow函数需要窗口的宽和高作为它的前两个参数；
     // 第三个参数表示这个窗口的名称（标题）
     // 最后两个参数我们暂时忽略，先设置为空指针就行
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Hello Triangle", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Hello OpenGL", nullptr, nullptr);
     if (window == nullptr)
     {
         std::cout << "Failed to create window" << std::endl;
@@ -77,41 +108,10 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
-    int width, height, nrChannels;
-    // 图像文件的位置、宽度、高度、颜色通道的个数
-    unsigned char *data;
-
     // 生成纹理
-    unsigned int texture[2];
-    const char *texturePath[2] = {
-        "Textures/container.jpg",
-        "Textures/awesomeface.png"};
-    glGenTextures(2, texture);
-
-    for (unsigned int i = 0; i < 2; i++)
-    {
-        glBindTexture(GL_TEXTURE_2D, texture[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        stbi_set_flip_vertically_on_load(true);
-        data = stbi_load(texturePath[i], &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            cout << "Failed to load texture:" << texturePath[i] << endl;
-        }
-    }
-    // 释放图像的内存
-    stbi_image_free(data);
+    unsigned int texture1, texture2;
+    CreateTexture(&texture1, "Textures/container.jpg", GL_RGB);
+    CreateTexture(&texture2, "Textures/awesomeface.png", GL_RGBA, true);
 
     Shader shader("Shaders/1-5-textures-2.vs", "Shaders/1-5-textures-2.fs");
     shader.use();
@@ -129,11 +129,11 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-     // bind textures on corresponding texture units
+        // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture[0]);
+        glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture[1]);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
         shader.use();
