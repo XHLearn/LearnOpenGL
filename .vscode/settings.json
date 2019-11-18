@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.xh": "json",
+        "*.love": "json",
+        "fstream": "cpp"
+    }
+}
