@@ -121,21 +121,6 @@ int main()
     shader.setInt("ourTexture1", 0);
     shader.setInt("ourTexture2", 1);
 
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0, 0, 1));
-    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
-    cout << "----------------------" << endl;
-    for (unsigned int i = 0; i < 4; i++)
-    {
-        for (unsigned j = 0; j < 4; j++)
-        {
-            cout << trans[i][j] << "    ";
-        }
-        cout << endl;
-    }
-    shader.setMat4("transform", trans);
-
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
@@ -157,6 +142,11 @@ int main()
         shader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5, 0.5, 0));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0, 0, 1));
+        shader.setMat4("transform", trans);
     }
 
     glDeleteVertexArrays(1, &VAO);
