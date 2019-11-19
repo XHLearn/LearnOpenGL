@@ -9,6 +9,8 @@ using namespace std;
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+float mixAplha = 0.2f;
+const float updateValue = 0.01f;
 
 void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, int custom, bool flip = false)
 {
@@ -39,6 +41,27 @@ void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, int
     }
     // 释放图像的内存
     stbi_image_free(data);
+}
+
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+        mixAplha -= updateValue;
+    }
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+        mixAplha += updateValue;
+    }
+    if (mixAplha > 1)
+        mixAplha = 1;
+    if (mixAplha < 0)
+        mixAplha = 0;
 }
 
 int main()
@@ -74,11 +97,11 @@ int main()
     }
 
     float vertices[] = {
-        // positions          // colors           // texture coords (note that we changed them to 'zoom in' on our texture image)
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.55f, 0.55f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.55f, 0.45f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.45f, 0.45f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.45f, 0.55f  // top left 
+        // ---- 位置 ----  ---- 颜色 ----    - 纹理坐标 -
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上
     };
 
     unsigned int indices[] = {
@@ -113,7 +136,7 @@ int main()
     CreateTexture(&texture1, "Textures/container.jpg", GL_RGB, GL_CLAMP_TO_EDGE);
     CreateTexture(&texture2, "Textures/awesomeface.png", GL_RGBA, GL_REPEAT, true);
 
-    Shader shader("Shaders/1-5-practice-3.vs", "Shaders/1-5-practice-3.fs");
+    Shader shader("Shaders/1-5-practice-4.vs", "Shaders/1-5-practice-4.fs");
     shader.use();
     shader.setInt("ourTexture1", 0);
     shader.setInt("ourTexture2", 1);
@@ -121,6 +144,9 @@ int main()
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
+        // 输入
+        processInput(window);
+
         // glfwSwapBuffers函数会交换颜色缓冲（它是一个储存着GLFW窗口每一个像素颜色的大缓冲）
         glfwSwapBuffers(window);
         // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
@@ -137,6 +163,7 @@ int main()
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
         shader.use();
+        shader.setFloat("alpha", mixAplha);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
