@@ -139,14 +139,22 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture2);
 
         // 刚创建的程序对象作为它的参数，以激活这个程序对象：
-        shader.use();
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        // 第一个矩形
         glm::mat4 trans = glm::mat4(1.0f);
         trans = glm::translate(trans, glm::vec3(0.5, 0.5, 0));
         trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0, 0, 1));
         shader.setMat4("transform", trans);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // 第二个矩形
+        trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(-0.5, -0.5, 0));
+        float t = abs(sin(glfwGetTime()));
+        trans = glm::scale(trans, glm::vec3(t, t, t));
+        shader.setMat4("transform", trans);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
     glDeleteVertexArrays(1, &VAO);
