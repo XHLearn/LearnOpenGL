@@ -2,6 +2,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "shader.h"
 #include "stb_image.h"
 using namespace std;
@@ -113,10 +116,25 @@ int main()
     CreateTexture(&texture1, "Textures/container.jpg", GL_RGB);
     CreateTexture(&texture2, "Textures/awesomeface.png", GL_RGBA, true);
 
-    Shader shader("Shaders/1-5-textures-2.vs", "Shaders/1-5-textures-2.fs");
+    Shader shader("Shaders/1-6-Transformations-1.vs", "Shaders/1-6-Transformations-1.fs");
     shader.use();
     shader.setInt("ourTexture1", 0);
     shader.setInt("ourTexture2", 1);
+
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0, 0, 1));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+    cout << "----------------------" << endl;
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        for (unsigned j = 0; j < 4; j++)
+        {
+            cout << trans[i][j] << "    ";
+        }
+        cout << endl;
+    }
+    shader.setMat4("transform", trans);
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
