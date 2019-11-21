@@ -49,7 +49,7 @@ glm::vec3 cameraFront = glm::vec3(0, 0, -1);
 glm::vec3 cameraUp = glm::vec3(0, 1, 0);
 float speed = 0.2f;
 
-void processInput(GLFWwindow *window)
+void processInput2(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
@@ -64,6 +64,24 @@ void processInput(GLFWwindow *window)
         cameraPos = cameraPos - glm::vec3(speed, 0, 0);
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos = cameraPos + glm::vec3(speed, 0, 0);
+}
+
+void processInput(GLFWwindow *window)
+{
+    // 当旋转的时候需要 glm::cross(cameraFront, cameraUp) 判断方向
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += speed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= speed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
 }
 
 int main()
