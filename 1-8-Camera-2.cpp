@@ -44,6 +44,28 @@ void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, boo
     stbi_image_free(data);
 }
 
+glm::vec3 cameraPos = glm::vec3(0, 0, 3);
+glm::vec3 cameraFront = glm::vec3(0, 0, -1);
+glm::vec3 cameraUp = glm::vec3(0, 1, 0);
+float speed = 0.2f;
+
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos = cameraPos - glm::vec3(0, 0, speed);
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos = cameraPos + glm::vec3(0, 0, speed);
+    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos = cameraPos - glm::vec3(speed, 0, 0);
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos = cameraPos + glm::vec3(speed, 0, 0);
+}
+
 int main()
 {
     // 调用glfwInit函数来初始化GLFW
@@ -158,13 +180,14 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    float radius = 10.0f;
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
     shader.setMat4("projection", projection);
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
+        // 输入
+        processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -175,16 +198,14 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        float camx = radius * sin(glfwGetTime());
-        float camz = radius * cos(glfwGetTime());
-        glm::mat4 view = glm::lookAt(glm::vec3(camx, 0, camz), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, glm::vec3(0, 1, 0));
         shader.setMat4("view", view);
 
         for (unsigned int i = 0; i < 10; i++)
         {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            model = glm::rotate(model, radius * i, glm::vec3(0.5, 0.7, 0.2));
+            model = glm::rotate(model, 10.0f * i, glm::vec3(0.5, 0.7, 0.2));
             shader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
