@@ -144,12 +144,15 @@ int main()
     shader.setInt("ourTexture1", 0);
     shader.setInt("ourTexture2", 1);
 
+    // 启用深度测试；它默认是关闭的
+    glEnable(GL_DEPTH_TEST);
+
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
