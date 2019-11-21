@@ -47,7 +47,8 @@ void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, boo
 glm::vec3 cameraPos = glm::vec3(0, 0, 3);
 glm::vec3 cameraFront = glm::vec3(0, 0, -1);
 glm::vec3 cameraUp = glm::vec3(0, 1, 0);
-float speed = 0.2f;
+float deltaTime = 0.0f;
+float lastTime = 0.0f;
 
 void processInput2(GLFWwindow *window)
 {
@@ -56,6 +57,7 @@ void processInput2(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
         return;
     }
+    float speed = 0.8f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos = cameraPos - glm::vec3(0, 0, speed);
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -74,6 +76,7 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
         return;
     }
+    float speed = deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += speed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -204,6 +207,8 @@ int main()
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
     {
+        deltaTime = glfwGetTime() - lastTime;
+        lastTime = glfwGetTime();
         // 输入
         processInput(window);
 
