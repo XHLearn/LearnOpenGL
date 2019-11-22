@@ -47,26 +47,15 @@ void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, boo
 glm::vec3 cameraPos = glm::vec3(0, 0, 3);
 glm::vec3 cameraFront = glm::vec3(0, 0, -1);
 glm::vec3 cameraUp = glm::vec3(0, 1, 0);
+
+// time
 float deltaTime = 0.0f;
 float lastTime = 0.0f;
 
-void processInput2(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-        return;
-    }
-    float speed = 0.8f * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos = cameraPos - glm::vec3(0, 0, speed);
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos = cameraPos + glm::vec3(0, 0, speed);
-    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos = cameraPos - glm::vec3(speed, 0, 0);
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos = cameraPos + glm::vec3(speed, 0, 0);
-}
+float lastX = 0, lastY = 0;
+bool firstMouse = true;
+float yaw = -90.0f;
+float pitch = 0.0f;
 
 void processInput(GLFWwindow *window)
 {
@@ -76,7 +65,7 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
         return;
     }
-    float speed = deltaTime;
+    float speed = 2 * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += speed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -85,6 +74,38 @@ void processInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+    float sensitivity = 0.2f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+    if (pitch > 89)
+        pitch = 89;
+    if (pitch < -89)
+        pitch = -89;
+
+    glm::vec3 front;
+    float ryaw = glm::radians(yaw);
+    float rpitch = glm::radians(pitch);
+    front.x = cos(ryaw) * cos(rpitch);
+    front.y = sin(rpitch);
+    front.z = sin(ryaw) * cos(rpitch);
+    cameraFront = glm::normalize(front);
 }
 
 int main()
@@ -203,6 +224,9 @@ int main()
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
     shader.setMat4("projection", projection);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
