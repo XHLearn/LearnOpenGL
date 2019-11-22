@@ -56,6 +56,7 @@ float lastX = 0, lastY = 0;
 bool firstMouse = true;
 float yaw = -90.0f;
 float pitch = 0.0f;
+float fov = 45;
 
 void processInput(GLFWwindow *window)
 {
@@ -88,7 +89,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     float yoffset = lastY - ypos;
     lastX = xpos;
     lastY = ypos;
-    float sensitivity = 0.2f;
+    float sensitivity = 0.05f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -106,6 +107,16 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     front.y = sin(rpitch);
     front.z = sin(ryaw) * cos(rpitch);
     cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    if (fov >= 1 && fov <= 45)
+        fov -= yoffset;
+    if (fov < 1)
+        fov = 1;
+    if (fov > 45)
+        fov = 45;
 }
 
 int main()
@@ -222,11 +233,9 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
-    shader.setMat4("projection", projection);
-
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // 让GLFW退出前一直保持运行
     while (!glfwWindowShouldClose(window))
@@ -247,6 +256,9 @@ int main()
 
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, glm::vec3(0, 1, 0));
         shader.setMat4("view", view);
+
+        glm::mat4 projection = glm::perspective(glm::radians(fov), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
+        shader.setMat4("projection", projection);
 
         for (unsigned int i = 0; i < 10; i++)
         {
