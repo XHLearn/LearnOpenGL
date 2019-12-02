@@ -25,6 +25,7 @@ public:
     void setBool(const string &name, bool value) const;
     void setInt(const string &name, int value) const;
     void setFloat(const string &name, float value) const;
+    void setVec3(const string &name, float x, float y, float z) const;
     void setVec4(const string &name, const glm::vec4 &value) const;
     void setMat4(const string &name, const glm::mat4 &value) const;
 };
@@ -126,6 +127,11 @@ void Shader::setFloat(const string &name, float value) const
 void Shader::setInt(const string &name, int value) const
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void Shader::setVec3(const string &name, float x, float y, float z) const
+{
+    glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 }
 
 void Shader::setVec4(const string &name, const glm::vec4 &value) const
