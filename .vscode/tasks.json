@@ -3,34 +3,42 @@
     // https://go.microsoft.com/fwlink/?LinkId=733558
     "version": "2.0.0",
     "tasks": [{
-        "label": "Build",
-        "command": "g++",
-        "args": [
-            "-std=c++11",
-            "${file}",
-            "-o",
-            "a.out",
-            "glad.c",
-            "-lGLEW",
-            "-lglfw3",
-            "-lGLU",
-            "-lGL",
-            "-lX11",
-            "-lpthread",
-            "-lXrandr",
-            "-lXi",
-            "-ldl",
-        ],
-        "type": "shell",
-        "group": {
-            "kind": "build",
-            "isDefault": true
+            "label": "Build",
+            "command": "g++",
+            "args": [
+                "-std=c++11",
+                "${file}",
+                "-o",
+                "a.out",
+                "glad.c",
+                "-lGLEW",
+                "-lglfw3",
+                "-lGLU",
+                "-lGL",
+                "-lX11",
+                "-lpthread",
+                "-lXrandr",
+                "-lXi",
+                "-ldl",
+            ],
+            "type": "shell",
+
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         },
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared"
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "./a.out",
+            "dependsOn": ["Build"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
         }
-    }]
+    ]
 }
