@@ -90,6 +90,7 @@ int main()
         cout << "Faile to initialize GLAD" << endl;
         return -1;
     }
+
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
@@ -134,16 +135,23 @@ int main()
         -0.5f, 0.5f, -0.5f, // 顶点坐标
     };
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // 在渲染前指定OpenGL该如何解释顶点数据
+    // cubeVAO
+    unsigned int cubeVAO;
+    glGenVertexArrays(1, &cubeVAO);
+    glBindVertexArray(cubeVAO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0); // 在渲染前指定OpenGL该如何解释顶点数据
+    glEnableVertexAttribArray(0);
+
+    // lightVAO
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
@@ -154,59 +162,48 @@ int main()
 
     Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
-    unsigned int lightVAO;
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
     glEnable(GL_DEPTH_TEST);
-    // 让GLFW退出前一直保持运行
-    while (!glfwWindowShouldClose(window))
+
+    while (!glfwWindowShouldClose(window)) // 让GLFW退出前一直保持运行
     {
         deltaTime = glfwGetTime() - lastTime;
         lastTime = glfwGetTime();
-        // 输入
-        processInput(window);
 
-        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
-        glfwPollEvents();
-        // glfwSwapBuffers函数会交换颜色缓冲（它是一个储存着GLFW窗口每一个像素颜色的大缓冲）
-        glfwSwapBuffers(window);
+        processInput(window);    // 输入
+        glfwPollEvents();        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
+        glfwSwapBuffers(window); // glfwSwapBuffers函数会交换颜色缓冲（它是一个储存着GLFW窗口每一个像素颜色的大缓冲）
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        cubeShader.use();
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = cam.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
+
+        // cubeShader
+        cubeShader.use();
         cubeShader.setMat4("model", model);
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
-
-        // 刚创建的程序对象作为它的参数，以激活这个程序对象：
-        glBindVertexArray(VAO);
+        glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        // lightShader
         lightShader.use();
-        lightShader.setMat4("view", view);
         glm::mat4 lightmodel = glm::mat4(1.0f);
         lightmodel = glm::translate(lightmodel, glm::vec3(1.2f, 1.0f, 2.0f));
         lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
         lightShader.setMat4("model", lightmodel);
+        lightShader.setMat4("view", view);
         lightShader.setMat4("projection", projection);
-
-        glBindVertexArray(lightVAO);
+        glBindVertexArray(lightVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
-    // glfwTerminate函数来释放GLFW分配的内存
-    glfwTerminate();
+    glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存
     return 0;
 }
