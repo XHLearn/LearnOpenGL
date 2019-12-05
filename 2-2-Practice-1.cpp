@@ -175,8 +175,9 @@ int main()
 
     while (!glfwWindowShouldClose(window)) // 让GLFW退出前一直保持运行
     {
-        deltaTime = glfwGetTime() - lastTime;
-        lastTime = glfwGetTime();
+        float time = glfwGetTime();
+        deltaTime = time - lastTime;
+        lastTime = time;
 
         processInput(window);    // 输入
         glfwPollEvents();        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
@@ -189,6 +190,8 @@ int main()
         glm::mat4 view = cam.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
 
+        lightPos = glm::vec3(3 * sin(time), 1.0f, 3 * cos(time));
+
         // cubeShader
         cubeShader.use();
         cubeShader.setMat4("model", model);
@@ -197,6 +200,7 @@ int main()
         glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
         glDrawArrays(GL_TRIANGLES, 0, 36);
         cubeShader.setVec3("viewPos", cam.Position);
+        cubeShader.setVec3("lightPos", lightPos);
 
         // lightShader
         lightShader.use();
