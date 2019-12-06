@@ -159,7 +159,7 @@ int main()
     glEnableVertexAttribArray(0);
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-    Shader cubeShader("Shaders/2-2-BasicLighting-2.vs", "Shaders/2-2-BasicLighting-2.fs");
+    Shader cubeShader("Shaders/2-2-Practice-4.vs", "Shaders/2-2-Practice-4.fs");
     cubeShader.use();
     cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
     cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
