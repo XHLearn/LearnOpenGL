@@ -162,13 +162,13 @@ int main()
     glm::vec3 lightColor(1, 1, 1);
     Shader cubeShader("Shaders/2-3-Material-1.vs", "Shaders/2-3-Material-1.fs");
     cubeShader.use();
-    cubeShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-    cubeShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-    cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    cubeShader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
+    cubeShader.setVec3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+    cubeShader.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
     cubeShader.setFloat("material.shininess", 32.0f);
     cubeShader.setVec3("light.position", lightPos);
-    cubeShader.setVec3("light.ambient", lightColor * 0.2f);
-    cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
+    cubeShader.setVec3("light.ambient", lightColor);
+    cubeShader.setVec3("light.diffuse", lightColor);
     cubeShader.setVec3("light.specular", lightColor);
 
     Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
@@ -202,9 +202,6 @@ int main()
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
         cubeShader.setVec3("viewPos", cam.Position);
-        lightColor = glm::vec3(sin(2 * time), sin(0.7 * time), sin(1.3 * time));
-        cubeShader.setVec3("light.ambient", lightColor * 0.2f);
-        cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
         glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
