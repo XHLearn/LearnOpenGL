@@ -161,9 +161,12 @@ int main()
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     Shader cubeShader("Shaders/2-3-Material-1.vs", "Shaders/2-3-Material-1.fs");
     cubeShader.use();
-    cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
     cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
     cubeShader.setVec3("lightPos", lightPos);
+    cubeShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+    cubeShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+    cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    cubeShader.setFloat("material.shininess", 32.0f);
 
     Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
