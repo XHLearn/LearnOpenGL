@@ -159,17 +159,17 @@ int main()
     glEnableVertexAttribArray(0);
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+    glm::vec3 lightColor(1, 1, 1);
     Shader cubeShader("Shaders/2-3-Material-1.vs", "Shaders/2-3-Material-1.fs");
     cubeShader.use();
-    cubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    cubeShader.setVec3("lightPos", lightPos);
-    cubeShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
-    cubeShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+    cubeShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+    cubeShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
-    cubeShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
-    cubeShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
-    cubeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.setVec3("light.position", lightPos);
+    cubeShader.setVec3("light.ambient", lightColor * 0.2f);
+    cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
+    cubeShader.setVec3("light.specular", lightColor);
 
     Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
@@ -181,8 +181,9 @@ int main()
 
     while (!glfwWindowShouldClose(window)) // 让GLFW退出前一直保持运行
     {
-        deltaTime = glfwGetTime() - lastTime;
-        lastTime = glfwGetTime();
+        float time = glfwGetTime();
+        deltaTime = time - lastTime;
+        lastTime = time;
 
         processInput(window);    // 输入
         glfwPollEvents();        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
@@ -200,9 +201,12 @@ int main()
         cubeShader.setMat4("model", model);
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
+        cubeShader.setVec3("viewPos", cam.Position);
+        lightColor = glm::vec3(sin(2 * time), sin(0.7 * time), sin(1.3 * time));
+        cubeShader.setVec3("light.ambient", lightColor * 0.2f);
+        cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
         glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        cubeShader.setVec3("viewPos", cam.Position);
 
         // lightShader
         lightShader.use();
