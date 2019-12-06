@@ -167,6 +167,9 @@ int main()
     cubeShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
+    cubeShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+    cubeShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
+    cubeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
     Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
