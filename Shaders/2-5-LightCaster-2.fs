@@ -11,9 +11,14 @@ struct Material {
 
 struct Light {
     vec3 position;  // 光源坐标
+
     vec3 ambient;   // 环境光照强度
     vec3 diffuse;   // 漫反射光照强度
     vec3 specular;  // 镜面光照强度
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 uniform vec3 viewPos;   // 观察者坐标
@@ -24,6 +29,9 @@ out vec4 FragColor;
 
 void main()
 {
+
+    float dis = length(light.position - FragPos);
+    float attenuation = 1.0f / (light.constant + light.linear * dis + light.quadratic * dis * dis);
     // 环境光照 - 环境光颜色在几乎所有情况下都等于漫反射颜色，所以这里直接使用漫反射材质颜色
     vec3 ambient =vec3(texture(material.diffuse, TexCoord)) * light.ambient;
 
@@ -46,5 +54,5 @@ void main()
 
     // 环境光照 + 漫反射 + 镜面光
     vec3 result = ambient + diffuse + specular;
-    FragColor = vec4(result, 1.0f);
+    FragColor = vec4(result * attenuation, 1.0f);
 }

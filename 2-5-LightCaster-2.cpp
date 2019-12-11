@@ -125,7 +125,6 @@ int main()
     }
 
     float vertices[] = {
-        // positions          // normals           // texture coords
         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
         0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
         0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
@@ -166,7 +165,23 @@ int main()
         0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+        // positions       // normals      // texture coords
+    };
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)
+        // 箱子位置
+    };
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -209,6 +224,9 @@ int main()
     cubeShader.setVec3("light.ambient", lightColor * 0.2f);
     cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
     cubeShader.setVec3("light.specular", lightColor);
+    cubeShader.setFloat("light.constant", 1);
+    cubeShader.setFloat("light.linear", 0.09f);
+    cubeShader.setFloat("light.quadratic", 0.032f);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuse);
@@ -247,7 +265,15 @@ int main()
         cubeShader.setMat4("projection", projection);
         cubeShader.setVec3("viewPos", cam.Position);
         glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            cubeShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // lightShader
         lightShader.use();
