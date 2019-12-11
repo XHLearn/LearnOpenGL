@@ -6,6 +6,7 @@ in vec2 TexCoord;   // 纹理坐标
 struct Material {
     sampler2D diffuse;   // 漫反射贴图
     sampler2D specular;  // 镜面光贴图
+    sampler2D emisson;   // 自发光贴图
     float shininess;// 反光度
 };
 
@@ -44,7 +45,10 @@ void main()
     float spec = pow(max(dot(reflectDir, viewDir), 0), material.shininess);
     vec3 specular = spec * vec3(texture(material.specular, TexCoord)) * light.specular;
 
-    // 环境光照 + 漫反射 + 镜面光
-    vec3 result = ambient + diffuse + specular;
+    // 自发光
+    vec3 emisson = texture(material.emisson, TexCoord).rgb;
+
+    // 环境光照 + 漫反射 + 镜面光 + 自发光
+    vec3 result = ambient + diffuse + specular + emisson;
     FragColor = vec4(result, 1.0f);
 }

@@ -193,9 +193,10 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    unsigned int diffuse, specular;
+    unsigned int diffuse, specular, emission;
     diffuse = loadTexture("Textures/container2.png");
-    specular = loadTexture("Textures/lighting_maps_specular_color.png");
+    specular = loadTexture("Textures/container2_specular.png");
+    emission = loadTexture("Textures/matrix.jpg");
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     glm::vec3 lightColor(1, 1, 1);
@@ -203,6 +204,7 @@ int main()
     cubeShader.use();
     cubeShader.setInt("material.diffuse", 0);
     cubeShader.setInt("material.specular", 1);
+    cubeShader.setInt("material.emisson", 2);
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
     cubeShader.setVec3("light.position", lightPos);
@@ -214,6 +216,8 @@ int main()
     glBindTexture(GL_TEXTURE_2D, diffuse);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specular);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, emission);
 
     Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
