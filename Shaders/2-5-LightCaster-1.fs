@@ -10,7 +10,7 @@ struct Material {
 };
 
 struct Light {
-    vec3 position;  // 光源坐标
+    vec3 direction; // 平行光-使用光的方向
     vec3 ambient;   // 环境光照强度
     vec3 diffuse;   // 漫反射光照强度
     vec3 specular;  // 镜面光照强度
@@ -29,7 +29,7 @@ void main()
 
     // 漫反射
     vec3 normal = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos); // 计算光线方向向量
+    vec3 lightDir = normalize(-light.direction); // 计算光线方向向量
     float diff = max(0.0, dot(normal, lightDir));  // 点乘计算漫反射强度 = cos(θ)
     vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoord)) * light.diffuse;   // 漫反射结果
 

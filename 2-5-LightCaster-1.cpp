@@ -125,7 +125,6 @@ int main()
     }
 
     float vertices[] = {
-        // positions          // normals           // texture coords
         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
         0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
         0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
@@ -166,7 +165,23 @@ int main()
         0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+        // positions       // normals      // texture coords
+    };
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)
+        // 箱子位置
+    };
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -185,27 +200,20 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    // lightVAO
-    unsigned int lightVAO;
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
     unsigned int diffuse, specular;
     diffuse = loadTexture("Textures/container2.png");
     specular = loadTexture("Textures/container2_specular.png");
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     glm::vec3 lightColor(1, 1, 1);
+    glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
     Shader cubeShader("Shaders/2-5-LightCaster-1.vs", "Shaders/2-5-LightCaster-1.fs");
     cubeShader.use();
     cubeShader.setInt("material.diffuse", 0);
     cubeShader.setInt("material.specular", 1);
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
-    cubeShader.setVec3("light.position", lightPos);
+    cubeShader.setVec3("light.direction", lightDirection);
     cubeShader.setVec3("light.ambient", lightColor * 0.2f);
     cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
     cubeShader.setVec3("light.specular", lightColor);
@@ -214,8 +222,6 @@ int main()
     glBindTexture(GL_TEXTURE_2D, diffuse);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specular);
-
-    Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -236,29 +242,24 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = cam.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
 
         // cubeShader
         cubeShader.use();
-        cubeShader.setMat4("model", model);
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
         cubeShader.setVec3("viewPos", cam.Position);
         glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // lightShader
-        lightShader.use();
-        glm::mat4 lightmodel = glm::mat4(1.0f);
-        lightmodel = glm::translate(lightmodel, lightPos);
-        lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
-        lightShader.setMat4("model", lightmodel);
-        lightShader.setMat4("view", view);
-        lightShader.setMat4("projection", projection);
-        glBindVertexArray(lightVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            cubeShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
     }
 
     glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存
