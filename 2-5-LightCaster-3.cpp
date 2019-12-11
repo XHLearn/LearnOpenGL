@@ -226,6 +226,9 @@ int main()
     cubeShader.setFloat("light.linear", 0.09f);
     cubeShader.setFloat("light.quadratic", 0.032f);
 
+    cubeShader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
+    cubeShader.setFloat("light.outerCutoff", glm::cos(glm::radians(17.5f)));
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuse);
     glActiveTexture(GL_TEXTURE1);
@@ -273,7 +276,6 @@ int main()
 
         cubeShader.setVec3("light.position", cam.Position);
         cubeShader.setVec3("light.direction", cam.Front);
-        cubeShader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
     }
 
     glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存

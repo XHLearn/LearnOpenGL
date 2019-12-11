@@ -13,6 +13,7 @@ struct Light {  // 聚光灯
     vec3 position;  // 光源坐标
     vec3 direction; // 方向
     float cutoff;    // 切光角
+    float outerCutoff; // 外切光角
 
     vec3 ambient;   // 环境光照强度
     vec3 diffuse;   // 漫反射光照强度
@@ -51,19 +52,21 @@ void main()
     float spec = pow(max(dot(reflectDir, viewDir), 0), material.shininess);
     vec3 specular = spec * vec3(texture(material.specular, TexCoord)) * light.specular;
 
-    // 环境光照 + 漫反射 + 镜面光
-    vec3 result = ambient + diffuse + specular;
+    // 计算光线 平滑/软化边缘
+    float theta = dot(normalize(light.direction), -lightDir);
+    float epsilon = light.cutoff - light.outerCutoff;
+    float intensity = clamp((theta - light.outerCutoff) / epsilon, 0, 1);
+    diffuse *= intensity;
+    specular *= intensity;
 
+    // 计算光线衰减
     float dis = length(light.position - FragPos);
     float attenuation = 1.0f / (light.constant + light.linear * dis + light.quadratic * dis * dis);
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
 
-    float theta = dot(normalize(light.direction), -lightDir);
-    if(theta > light.cutoff)    // 角度越小cos(θ)越大，所以这里是 >
-    {
-        FragColor = vec4(result * attenuation, 1.0f);
-    }
-    else
-    {
-        FragColor = vec4(ambient * attenuation, 1.0f);
-    }
+    // 环境光照 + 漫反射 + 镜面光
+    vec3 result = ambient + diffuse + specular;
+    FragColor = vec4(result, 1.0f);
 }
