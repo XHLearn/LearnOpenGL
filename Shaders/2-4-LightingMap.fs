@@ -5,7 +5,7 @@ in vec2 TexCoord;   // 纹理坐标
 
 struct Material {
     sampler2D diffuse;   // 漫反射贴图
-    vec3 specular;  // 镜面光照
+    sampler2D specular;  // 镜面光贴图
     float shininess;// 反光度
 };
 
@@ -42,7 +42,7 @@ void main()
     // 然后取它的32次幂。这个32是高光的反光度(Shininess)。
     // 一个物体的反光度越高，反射光的能力越强，散射得越少，高光点就会越小。
     float spec = pow(max(dot(reflectDir, viewDir), 0), material.shininess);
-    vec3 specular = (spec * material.specular) * light.specular;
+    vec3 specular = spec * vec3(texture(material.specular, TexCoord)) * light.specular;
 
     // 环境光照 + 漫反射 + 镜面光
     vec3 result = ambient + diffuse + specular;
