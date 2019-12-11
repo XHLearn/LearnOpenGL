@@ -1,10 +1,10 @@
 #version 330 core
 in vec3 Normal;     // 法向量
 in vec3 FragPos;    // 物体坐标
+in vec2 TexCoord;   // 纹理坐标
 
 struct Material {
-    vec3 ambient;   // 环境光照
-    vec3 diffuse;   // 漫反射光照
+    sampler2D diffuse;   // 漫反射贴图
     vec3 specular;  // 镜面光照
     float shininess;// 反光度
 };
@@ -24,14 +24,14 @@ out vec4 FragColor;
 
 void main()
 {
-    // 环境光照
-    vec3 ambient = material.ambient * light.ambient;
+    // 环境光照 - 环境光颜色在几乎所有情况下都等于漫反射颜色，所以这里直接使用漫反射材质颜色
+    vec3 ambient =vec3(texture(material.diffuse, TexCoord)) * light.ambient;
 
     // 漫反射
     vec3 normal = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos); // 计算光线方向向量
     float diff = max(0.0, dot(normal, lightDir));  // 点乘计算漫反射强度 = cos(θ)
-    vec3 diffuse = (diff * material.diffuse) * light.diffuse;   // 漫反射结果
+    vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoord)) * light.diffuse;   // 漫反射结果
 
     // 镜面光
     vec3 viewDir = normalize(viewPos - FragPos);    // 计算观察方向向量
