@@ -59,35 +59,37 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     cam.ProcessMouseScroll(yoffset);
 }
 
-void CreateTexture(unsigned int *texture, const char *filename, int rgbmode, bool flip = false)
+unsigned int loadTexture(const char *path)
 {
+    unsigned int textureID;
+    glGenTextures(1, &textureID); // 生成纹理
     // 图像文件的位置、宽度、高度、颜色通道的个数
     int width, height, nrChannels;
-    unsigned char *data;
-
-    // 生成纹理
-    glGenTextures(1, texture);
-    glBindTexture(GL_TEXTURE_2D, *texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    if (flip)
-    {
-        stbi_set_flip_vertically_on_load(true);
-    }
-    data = stbi_load(filename, &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, rgbmode, width, height, 0, rgbmode, GL_UNSIGNED_BYTE, data);
+        GLenum format;
+        if (nrChannels == 1)
+            format = GL_RED;
+        else if (nrChannels == 3)
+            format = GL_RGB;
+        else if (nrChannels == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
     else
     {
-        cout << "Failed to load texture:" << filename << endl;
+        cout << "Failed to load texture:" << path << endl;
     }
-    // 释放图像的内存
-    stbi_image_free(data);
+    stbi_image_free(data); // 释放图像的内存
+    return textureID;
 }
 
 int main()
@@ -192,8 +194,8 @@ int main()
     glEnableVertexAttribArray(0);
 
     unsigned int diffuse, specular;
-    CreateTexture(&diffuse, "Textures/container2.png", GL_RGBA, true);
-    CreateTexture(&specular, "Textures/container2_specular.png", GL_RGBA, true);
+    diffuse = loadTexture("Textures/container2.png");
+    specular = loadTexture("Textures/container2_specular.png");
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     glm::vec3 lightColor(1, 1, 1);
