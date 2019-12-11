@@ -9,8 +9,10 @@ struct Material {
     float shininess;// 反光度
 };
 
-struct Light {
+struct Light {  // 聚光灯
     vec3 position;  // 光源坐标
+    vec3 direction; // 方向
+    float cutoff;    // 切光角
 
     vec3 ambient;   // 环境光照强度
     vec3 diffuse;   // 漫反射光照强度
@@ -29,9 +31,6 @@ out vec4 FragColor;
 
 void main()
 {
-
-    float dis = length(light.position - FragPos);
-    float attenuation = 1.0f / (light.constant + light.linear * dis + light.quadratic * dis * dis);
     // 环境光照 - 环境光颜色在几乎所有情况下都等于漫反射颜色，所以这里直接使用漫反射材质颜色
     vec3 ambient =vec3(texture(material.diffuse, TexCoord)) * light.ambient;
 
@@ -54,5 +53,17 @@ void main()
 
     // 环境光照 + 漫反射 + 镜面光
     vec3 result = ambient + diffuse + specular;
-    FragColor = vec4(result * attenuation, 1.0f);
+
+    float dis = length(light.position - FragPos);
+    float attenuation = 1.0f / (light.constant + light.linear * dis + light.quadratic * dis * dis);
+
+    float theta = dot(normalize(light.direction), -lightDir);
+    if(theta > light.cutoff)    // 角度越小cos(θ)越大，所以这里是 >
+    {
+        FragColor = vec4(result * attenuation, 1.0f);
+    }
+    else
+    {
+        FragColor = vec4(ambient * attenuation, 1.0f);
+    }
 }

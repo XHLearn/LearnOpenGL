@@ -212,7 +212,6 @@ int main()
     diffuse = loadTexture("Textures/container2.png");
     specular = loadTexture("Textures/container2_specular.png");
 
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     glm::vec3 lightColor(1, 1, 1);
     Shader cubeShader("Shaders/2-5-LightCaster-3.vs", "Shaders/2-5-LightCaster-3.fs");
     cubeShader.use();
@@ -220,7 +219,6 @@ int main()
     cubeShader.setInt("material.specular", 1);
     cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
-    cubeShader.setVec3("light.position", lightPos);
     cubeShader.setVec3("light.ambient", lightColor * 0.2f);
     cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
     cubeShader.setVec3("light.specular", lightColor);
@@ -232,8 +230,6 @@ int main()
     glBindTexture(GL_TEXTURE_2D, diffuse);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specular);
-
-    Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -275,16 +271,9 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        // lightShader
-        lightShader.use();
-        glm::mat4 lightmodel = glm::mat4(1.0f);
-        lightmodel = glm::translate(lightmodel, lightPos);
-        lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
-        lightShader.setMat4("model", lightmodel);
-        lightShader.setMat4("view", view);
-        lightShader.setMat4("projection", projection);
-        glBindVertexArray(lightVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        cubeShader.setVec3("light.position", cam.Position);
+        cubeShader.setVec3("light.direction", cam.Front);
+        cubeShader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
     }
 
     glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存
