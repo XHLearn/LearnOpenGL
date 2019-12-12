@@ -183,6 +183,14 @@ int main()
         // 箱子位置
     };
 
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f, 0.2f, 2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f, 2.0f, -12.0f),
+        glm::vec3(0.0f, 0.0f, -3.0f)
+        // 点光源位置
+    };
+
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -217,17 +225,57 @@ int main()
     cubeShader.use();
     cubeShader.setInt("material.diffuse", 0);
     cubeShader.setInt("material.specular", 1);
-    cubeShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.setFloat("material.shininess", 32.0f);
-    cubeShader.setVec3("light.ambient", lightColor * 0.2f);
-    cubeShader.setVec3("light.diffuse", lightColor * 0.5f);
-    cubeShader.setVec3("light.specular", lightColor);
-    cubeShader.setFloat("light.constant", 1);
-    cubeShader.setFloat("light.linear", 0.09f);
-    cubeShader.setFloat("light.quadratic", 0.032f);
 
-    cubeShader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
-    cubeShader.setFloat("light.outerCutoff", glm::cos(glm::radians(17.5f)));
+    cubeShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+    cubeShader.setVec3("dirLight.ambient", lightColor * 0.2f);
+    cubeShader.setVec3("dirLight.diffuse", lightColor * 0.5f);
+    cubeShader.setVec3("dirLight.specular", lightColor);
+
+    // spotLight
+    cubeShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+    cubeShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+    cubeShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.setFloat("spotLight.constant", 1.0f);
+    cubeShader.setFloat("spotLight.linear", 0.09);
+    cubeShader.setFloat("spotLight.quadratic", 0.032);
+    cubeShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+    cubeShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+
+    // point light 1
+    cubeShader.setVec3("pointLights[0].position", pointLightPositions[0]);
+    cubeShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.setFloat("pointLights[0].constant", 1.0f);
+    cubeShader.setFloat("pointLights[0].linear", 0.09);
+    cubeShader.setFloat("pointLights[0].quadratic", 0.032);
+    // point light 2
+    cubeShader.setVec3("pointLights[1].position", pointLightPositions[1]);
+    cubeShader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.setFloat("pointLights[1].constant", 1.0f);
+    cubeShader.setFloat("pointLights[1].linear", 0.09);
+    cubeShader.setFloat("pointLights[1].quadratic", 0.032);
+    // point light 3
+    cubeShader.setVec3("pointLights[2].position", pointLightPositions[2]);
+    cubeShader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.setFloat("pointLights[2].constant", 1.0f);
+    cubeShader.setFloat("pointLights[2].linear", 0.09);
+    cubeShader.setFloat("pointLights[2].quadratic", 0.032);
+    // point light 4
+    cubeShader.setVec3("pointLights[3].position", pointLightPositions[3]);
+    cubeShader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.setFloat("pointLights[3].constant", 1.0f);
+    cubeShader.setFloat("pointLights[3].linear", 0.09);
+    cubeShader.setFloat("pointLights[3].quadratic", 0.032);
+
+    Shader lightShader("Shaders/2-1-Colors-1.vs", "Shaders/2-1-Colors-light.fs");
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuse);
@@ -259,10 +307,10 @@ int main()
 
         // cubeShader
         cubeShader.use();
-        cubeShader.setMat4("model", model);
+        cubeShader.setVec3("viewPos", cam.Position);
+
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
-        cubeShader.setVec3("viewPos", cam.Position);
         glBindVertexArray(cubeVAO); // 刚创建的程序对象作为它的参数，以激活这个程序对象
         for (unsigned int i = 0; i < 10; i++)
         {
@@ -274,8 +322,22 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        cubeShader.setVec3("light.position", cam.Position);
-        cubeShader.setVec3("light.direction", cam.Front);
+        // 聚光灯设置
+        cubeShader.setVec3("spotLight.position", cam.Position);
+        cubeShader.setVec3("spotLight.direction", cam.Front);
+
+        lightShader.use();
+        lightShader.setMat4("view", view);
+        lightShader.setMat4("projection", projection);
+        glBindVertexArray(lightVAO);
+        for (unsigned int i = 0; i < 4; i++)
+        {
+            model = glm::mat4(1);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
+            lightShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
     }
 
     glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存
