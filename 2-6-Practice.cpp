@@ -192,10 +192,10 @@ int main()
     };
 
     glm::vec3 pointLightColors[] = {
-        glm::vec3(1.0f, 0.6f, 0.0f),
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::vec3(1.0f, 1.0, 0.0),
-        glm::vec3(0.2f, 0.2f, 1.0f)
+        glm::vec3(0.2f, 0.2f, 0.6f),
+        glm::vec3(0.3f, 0.3f, 0.7f),
+        glm::vec3(0.0f, 0.0f, 0.3f),
+        glm::vec3(0.4f, 0.4f, 0.4f)
         // 点光源颜色
     };
 
@@ -236,14 +236,14 @@ int main()
     cubeShader.setFloat("material.shininess", 32.0f);
 
     cubeShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-    cubeShader.setVec3("dirLight.ambient", 0.3f, 0.24f, 0.14f);
-    cubeShader.setVec3("dirLight.diffuse", 0.7f, 0.42f, 0.26f);
-    cubeShader.setVec3("dirLight.specular", lightColor * 0.5f);
+    cubeShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.1f);
+    cubeShader.setVec3("dirLight.diffuse", 0.2f, 0.2f, 0.7);
+    cubeShader.setVec3("dirLight.specular", lightColor * 0.7f);
 
     // spotLight
     cubeShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-    cubeShader.setVec3("spotLight.diffuse", 0.8f, 0.8f, 0.0f);
-    cubeShader.setVec3("spotLight.specular", 0.8f, 0.8f, 0.0f);
+    cubeShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+    cubeShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
     cubeShader.setFloat("spotLight.constant", 1.0f);
     cubeShader.setFloat("spotLight.linear", 0.09);
     cubeShader.setFloat("spotLight.quadratic", 0.032);
@@ -306,7 +306,7 @@ int main()
         glfwPollEvents();        // glfwPollEvents函数检查有没有触发什么事件（比如键盘输入、鼠标移动等），然后调用对应的回调函数
         glfwSwapBuffers(window); // glfwSwapBuffers函数会交换颜色缓冲（它是一个储存着GLFW窗口每一个像素颜色的大缓冲）
 
-        glClearColor(0.75f, 0.52f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 model = glm::mat4(1.0f);
