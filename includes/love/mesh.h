@@ -1,3 +1,5 @@
+#ifndef MESH_H
+#define MESH_H
 #include <iostream>
 #include <vector>
 #include "glm/glm.hpp"
@@ -15,6 +17,7 @@ struct Texture
 {
     unsigned int id;
     string type;
+    string path;
 };
 
 class Mesh
@@ -79,3 +82,4 @@ private:
         glBindVertexArray(0);
     }
 };
+#endif
