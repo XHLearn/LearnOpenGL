@@ -2,7 +2,8 @@
     // 有关 tasks.json 格式的文档，请参见
     // https://go.microsoft.com/fwlink/?LinkId=733558
     "version": "2.0.0",
-    "tasks": [{
+    "tasks": [
+        {
             "label": "Build",
             "command": "g++",
             "args": [
@@ -11,16 +12,19 @@
                 "-o",
                 "a.out",
                 "glad.c",
-                "lib/libglfw3.a",
+                // "-L/so",
+                // "-Wl,-rpath=so",    // 添加动态链接库路径
                 "-Iincludes",
                 "-Iincludes/love",
                 "-Iincludes/others",
+                "lib/libglfw3.a",
+                "-lassimp",
+                "-Llib",
                 "-lX11",
                 "-lpthread",
                 "-ldl",
             ],
             "type": "shell",
-
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -32,11 +36,14 @@
             "label": "run",
             "type": "shell",
             "command": "./a.out",
-            "dependsOn": ["Build"],
+            "dependsOn": [
+                "Build"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
+            "problemMatcher": []
         }
     ]
 }
