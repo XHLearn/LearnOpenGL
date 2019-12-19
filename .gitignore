@@ -3,4 +3,5 @@ test.cpp
 Test/
 lib/
 resources/
-so/lib
+so/
+Textures/
