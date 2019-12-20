@@ -195,6 +195,8 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    // 默认逆时针的环绕顺序
+    glFrontFace(GL_CW); // GL_CW 顺时针顺序
 
     while (!glfwWindowShouldClose(window)) // 让GLFW退出前一直保持运行
     {
