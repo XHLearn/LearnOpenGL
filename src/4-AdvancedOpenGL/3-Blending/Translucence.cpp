@@ -1,7 +1,7 @@
 /*
  * @Author: lamborghini1993
  * @Date: 2019-12-20 19:51:27
- * @UpdateDate   : 2019-12-20 20:07:12
+ * @UpdateDate   : 2019-12-20 20:08:58
  * @Description: 
  * 深度测试和混合一起使用的话会产生一些麻烦。
  * 当写入深度缓冲时，深度缓冲不会检查片段是否是透明的，
@@ -314,14 +314,20 @@ int main()
         // window
         glBindVertexArray(windowVAO);
         glBindTexture(GL_TEXTURE_2D, windowTexture);
+        map<float, glm::vec3> sorted;
         for (unsigned int i = 0; i < vegetation.size(); i++)
         {
+            float dis = glm::length(cam.Position - vegetation[i]);
+            sorted[dis] = vegetation[i];
+        }
+
+        for (map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+        {
             model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
+            model = glm::translate(model, it->second);
             shader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
-
     }
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &planeVAO);

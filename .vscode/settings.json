@@ -4,6 +4,7 @@
         "*.xh": "json",
         "fstream": "cpp",
         "iostream": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "map": "cpp"
     }
 }
