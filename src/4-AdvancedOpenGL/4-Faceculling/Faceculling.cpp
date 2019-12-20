@@ -124,65 +124,53 @@ int main()
         return -1;
     }
 
+    // 逆时针环绕顺序三角形
     float cubeVertices[] = {
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-        // positions       // texture Coords
+        // Back face
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // Bottom-left
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   // top-right
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  // bottom-right
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   // top-right
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,  // top-left
+        // Front face
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,  // bottom-right
+        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,   // top-right
+        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,   // top-right
+        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,  // top-left
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+        // Left face
+        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // top-right
+        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  // top-left
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  // bottom-right
+        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // top-right
+                                         // Right face
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    // top-left
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  // bottom-right
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,   // top-right
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  // bottom-right
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,    // top-left
+        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,   // bottom-left
+        // Bottom face
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
+        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  // top-left
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,   // bottom-left
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,   // bottom-left
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,  // bottom-right
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
+        // Top face
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // bottom-right
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  // top-right
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,   // bottom-right
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f   // bottom-left
     };
 
-    float planeVertices[] = {
-        5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
-        -5.0f, -0.5f, 5.0f, 0.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
-
-        5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
-        5.0f, -0.5f, -5.0f, 2.0f, 2.0f
-        // positions       // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
-    };
-
-    unsigned int cubeTexture, floorTexture;
-    cubeTexture = loadTexture("resources/textures/marble.jpg");
-    floorTexture = loadTexture("resources/textures/metal.png");
+    unsigned int cubeTexture = loadTexture("resources/textures/marble.jpg");
 
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
@@ -195,25 +183,6 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    glBindVertexArray(0);
-    // TODO 先绑定贴图有问题
-    // glActiveTexture(GL_TEXTURE);
-    // glBindTexture(GL_TEXTURE_2D, cubeTexture);
-
-    // plane VAO
-    unsigned int planeVAO, planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    glBindVertexArray(0);
-    // glActiveTexture(GL_TEXTURE);
-    // glBindTexture(GL_TEXTURE_2D, floorTexture);
 
     Shader shader("src/4-AdvancedOpenGL/4-Faceculling/Faceculling.vs", "src/4-AdvancedOpenGL/4-Faceculling/Faceculling.fs");
     shader.use();
@@ -224,7 +193,8 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS); // 永远通过深度测试
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     while (!glfwWindowShouldClose(window)) // 让GLFW退出前一直保持运行
     {
@@ -255,21 +225,9 @@ int main()
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        shader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        // floor
-        glBindVertexArray(planeVAO);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        shader.setMat4("model", glm::mat4(1.0f));
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
     }
     glDeleteVertexArrays(1, &cubeVAO);
-    glDeleteVertexArrays(1, &planeVAO);
     glDeleteBuffers(1, &cubeVBO);
-    glDeleteBuffers(1, &planeVBO);
 
     glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存
     return 0;
