@@ -1,7 +1,24 @@
+/*
+ * @Author: lamborghini1993
+ * @Date: 2019-12-20 19:51:27
+ * @UpdateDate   : 2019-12-20 20:07:12
+ * @Description: 
+ * 深度测试和混合一起使用的话会产生一些麻烦。
+ * 当写入深度缓冲时，深度缓冲不会检查片段是否是透明的，
+ * 所以透明的部分会和其它值一样写入到深度缓冲中。
+ * 结果就是窗户的整个四边形不论透明度都会进行深度测试。
+ * 即使透明的部分应该显示背后的窗户，深度测试仍然丢弃了它们。
+ * 
+ * 当绘制一个有不透明和透明物体的场景的时候，大体的原则如下：
+    先绘制所有不透明的物体。
+    对所有透明的物体排序。
+    按顺序绘制所有透明的物体。
+ */
 #define STB_IMAGE_IMPLEMENTATION
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <map>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -79,8 +96,8 @@ unsigned int loadTexture(const char *path)
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); 
-        // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -181,7 +198,7 @@ int main()
         // positions       // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
     };
 
-    float grassVertices[] = {
+    float windowVertices[] = {
         // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
         0.0f, 0.5f, 0.0f, 0.0f, 0.0f,
         0.0f, -0.5f, 0.0f, 0.0f, 1.0f,
@@ -201,7 +218,7 @@ int main()
     unsigned int cubeTexture, floorTexture;
     cubeTexture = loadTexture("resources/textures/marble.jpg");
     floorTexture = loadTexture("resources/textures/metal.png");
-    unsigned int grassTexture = loadTexture("resources/textures/grass.png");
+    unsigned int windowTexture = loadTexture("resources/textures/blending_transparent_window.png");
 
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
@@ -229,13 +246,13 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    // grass VAO
-    unsigned int grassVAO, grassVBO;
-    glGenVertexArrays(1, &grassVAO);
-    glGenBuffers(1, &grassVBO);
-    glBindVertexArray(grassVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, grassVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), &grassVertices, GL_STATIC_DRAW);
+    // window VAO
+    unsigned int windowVAO, windowVBO;
+    glGenVertexArrays(1, &windowVAO);
+    glGenBuffers(1, &windowVBO);
+    glBindVertexArray(windowVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, windowVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(windowVertices), &windowVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
@@ -251,6 +268,8 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window)) // 让GLFW退出前一直保持运行
     {
@@ -292,9 +311,9 @@ int main()
         shader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        // grass
-        glBindVertexArray(grassVAO);
-        glBindTexture(GL_TEXTURE_2D, grassTexture);
+        // window
+        glBindVertexArray(windowVAO);
+        glBindTexture(GL_TEXTURE_2D, windowTexture);
         for (unsigned int i = 0; i < vegetation.size(); i++)
         {
             model = glm::mat4(1.0f);
@@ -302,13 +321,14 @@ int main()
             shader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
+
     }
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &planeVAO);
-    glDeleteVertexArrays(1, &grassVAO);
+    glDeleteVertexArrays(1, &windowVAO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteBuffers(1, &planeVBO);
-    glDeleteBuffers(1, &grassVBO);
+    glDeleteBuffers(1, &windowVBO);
 
     glfwTerminate(); // glfwTerminate函数来释放GLFW分配的内存
     return 0;
