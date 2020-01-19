@@ -92,6 +92,37 @@ unsigned int loadTexture(const char *path)
     return textureID;
 }
 
+unsigned int loadCubemap(vector<string> faces)
+{
+    // 创建立方体贴图
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    unsigned char *data;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
+        else
+        {
+            cout << "Failed to load texture:" << faces[i] << endl;
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    stbi_image_free(data); // 释放图像的内存
+    return textureID;
+}
+
 int main()
 {
     // 调用glfwInit函数来初始化GLFW
@@ -179,6 +210,16 @@ int main()
         5.0f, -0.5f, -5.0f, 2.0f, 2.0f
         // positions       // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
     };
+
+    vector<string> faces{
+        "resources/textures/skybox/right.jpg",
+        "resources/textures/skybox/left.jpg",
+        "resources/textures/skybox/top.jpg",
+        "resources/textures/skybox/bottom.jpg",
+        "resources/textures/skybox/front.jpg",
+        "resources/textures/skybox/back.jpg"};
+
+    unsigned int cubemapTexture = loadCubemap(faces);
 
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
